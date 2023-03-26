@@ -12,7 +12,7 @@ Perform substantial market risk modelling according to SVB and Lehman
   4.3 Each commit to the branch has to follow the commit rules provided below.
 5. Merge your feature into the prep branch. 
 
-# Committing/Pushing:
+# Committing and Pushin
 1. There are rules on how to structure your push messages:
   - feat: A new feature
   - fix: A bug fix
