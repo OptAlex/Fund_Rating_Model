@@ -1,0 +1,1 @@
+# Example file for creating help functions which can be used in the whole project
