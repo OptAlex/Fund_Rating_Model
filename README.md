@@ -1,6 +1,10 @@
 # What are we doing?
 Perform substantial market risk modelling according to SVB and Lehman 
 
+# How to organise?
+
+We use Trello to organise our tasks. Please make sure to create an account and keep track of everything project related there. This includes Literature, ToDo, Meetings, Time Schedule and so on. Link to join: https://trello.com/invite/marketrisk25/ATTIc2efa7bc04b806f168c1ba552d0c89892AD94AC3
+
 # How to use GIT?
 
 1. Never push to main branch! This branch is only used for merging new features into the main code. The features are tested on the prep branch first!
@@ -12,7 +16,8 @@ Perform substantial market risk modelling according to SVB and Lehman
   4.3 Each commit to the branch has to follow the commit rules provided below.
 5. Merge your feature into the prep branch. 
 
-# Committing and Pushin
+# Committing and Pushin
+
 1. There are rules on how to structure your push messages:
   - feat: A new feature
   - fix: A bug fix
@@ -28,6 +33,7 @@ Perform substantial market risk modelling according to SVB and Lehman
 5. After your code is tested successfully and being pushed to the main, add your NEW packages to the requierments.txt file. Make sure to specify your version in cases needed
 
 # Example
+
 You want to add a feature which calculates the option price using Black-Scholes
 1. Create a branch "feat/BlackScholesOptionPricing" from main
 2. Change the branch in your IDE to the new branch
