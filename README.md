@@ -11,12 +11,12 @@ We use Trello to organise our tasks. Please make sure to create an account and k
 2. We only merge the prep branch into the main branch with at least two people checking the code and functionality.
 3. The prep branch is the prototyping branch where we test new features and how they integrate in the currently used code. 
 4. If you want to create a new feature (a new functionality of the code) you do the following steps:
-  4.1 Create a branch called "feat/Description of what the purpose of the branch is" from main
-  4.2 This is the branch where you work on the new feature. Make sure to change your branch in the IDE of your choice.
-  4.3 Each commit to the branch has to follow the commit rules provided below.
+  - Create a branch called "feat/Description of what the purpose of the branch is" from main
+  - This is the branch where you work on the new feature. Make sure to change your branch in the IDE of your choice.
+  - Each commit to the branch has to follow the commit rules provided below.
 5. Merge your feature into the prep branch. 
 
-# Committing and Pushin
+# Committing and Pushing
 
 1. There are rules on how to structure your push messages:
   - feat: A new feature
@@ -38,12 +38,12 @@ You want to add a feature which calculates the option price using Black-Scholes
 1. Create a branch "feat/BlackScholesOptionPricing" from main
 2. Change the branch in your IDE to the new branch
 3. Implement your Code.
-  3.1 Make sure to use existing help functions and to create a new BlackScholesOptionPricing.py file.
-  3.2 Commit, using the rules provided, after certain points (f.e. after long call, after long put, etc.)
+  - Make sure to use existing help functions and to create a new BlackScholesOptionPricing.py file.
+  - Commit, using the rules provided, after certain points (f.e. after long call, after long put, etc.)
 5. Check your code for comments and unnecessary for loops, etc. 
 6. Use black formatting 
 7. Push your commits to your branch: "feat/BlackScholesOptionpricing, extended description (field): add BS Option Pricing functionality"
-  NOTE: discription is always simple present!
+  - NOTE: discription is always simple present!
 9. check code and results with someone else and merge your branch into prep
 10. modify requirements.py
 11. If everything is tested and OK, merge prep into main (keep the prep branch!)
