@@ -1,2 +1,6 @@
+# run requirements file to automatically install all required packages. Do so by running
+# "pip install -r requirements.txt" in your terminal.
+
+black
 pandas
 numpy
