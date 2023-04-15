@@ -1,5 +1,10 @@
 # What are we doing?
-Perform substantial market risk modelling according to SVB and Lehman 
+Funds rating model
+- Construct a portfolio of funds (>20 funds).
+- Download daily market data for these funds. The time series shall cover at least 10 years.
+- Determine a suitable time series model (or suitable time series models, if deemed necessary) for these funds.
+- Simulate the PD and the 1Y-Credit VaR of this portfolio using your time series models under the assumption that the funds default when the simulated asset value of a fund falls below some default threshold, which you need to define and justify.
+- Investigate the appropriateness of such a modelling approach. This includes that you show that your chosen time series model(s) is (are) appropriate. How large is the statistical uncertainty of the model parameters? Is your VaR model appropriate and how precisely can you estimate the VaR?
 
 # How to organise?
 
