@@ -74,6 +74,7 @@ def estimate_default_prob(df):
 
     return default_prob
 
+#ToDo write a loop for all funds and adapt the code to see the date for the PD
 
 # Call function to estimate default probabilities
 default_prob = estimate_default_prob(df)
