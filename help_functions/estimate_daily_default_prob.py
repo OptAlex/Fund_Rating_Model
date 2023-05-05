@@ -37,7 +37,6 @@ def simulate_returns(garch_parameters, num_days_to_simulate, p=1, q=1):
     sim_data = sim_mod.simulate(garch_parameters, num_days_to_simulate)
     return sim_data["data"]
 
-
 def run_garch_model(returns):
     """
     Simple function to run a GARCH model
@@ -307,41 +306,52 @@ def estimate_mc_count_default_prob(
     default_prob_dict = {}
     fund_dict = get_fund_dict(df)
 
-    last_day = pd.to_datetime(df["date"].iloc[-1])
-    end_date = last_day + timedelta(days=prediction_days - 1)
+    first_prediction_day = pd.to_datetime(df["date"].iloc[-1]) + timedelta(days=1)
+    end_date = first_prediction_day + timedelta(days=prediction_days - 1)
     # ToDo: the prediction for the first date can be observed in the data
     # ToDo: add last_day + business day, not timedelta
 
     for fund_name, (prices, returns) in fund_dict.items():
         default_prob = np.zeros(prediction_days)
 
-        # Multiply returns by 100 as this is preferred by the GARCH package
-        returns *= 100
+        sample_size = 252
+        bootstrap_returns = []
+        for i in range(num_samples):
+            # Randomly select 252 returns from the data, with replacement
+            subset_indices = np.random.choice(len(returns), size=sample_size, replace=True)
+            subset = returns[subset_indices]
+            bootstrap_returns.append(subset)
+
+        # Calculate the mean of the bootstrapped returns
+        bootstrap_returns = np.mean(bootstrap_returns, axis=0)
+        bootstrap_returns = bootstrap_returns * 100
 
         # Fit the GARCH model to the returns
-        res = run_garch_model(returns)
+        res = run_garch_model(bootstrap_returns)
         garch_parameters = res.params
+
+        # Initialize array to store the simulated returns for each day
+        simulated_returns_array = np.zeros((num_samples, prediction_days))
 
         for i in range(num_samples):
             # Simulate future returns using the GARCH model
             simulated_returns = simulate_returns(
                 garch_parameters, num_days_to_simulate=prediction_days
             )
+            # Store the simulated returns for each day
+            simulated_returns_array[i] = simulated_returns
 
-            for j in range(prediction_days):
-                # Calculate the threshold violations
-                if simulated_returns[j] / 100 <= -threshold:
-                    default_prob[j] += 1
-
-        # Divide the default prob by the number of samples
-        default_prob /= num_samples
+        # Calculate the threshold violations for each day
+        for j in range(prediction_days):
+            daily_returns = simulated_returns_array[:, j]
+            num_violations = np.sum(daily_returns / 100 <= threshold)
+            default_prob[j] = num_violations / num_samples
 
         # Add the default probabilities for the fund to the dictionary
-        # Divide the default prob by 100 as we multiplied the returns earlier
-        default_prob_dict[f"default_prob_{fund_name}"] = default_prob / 100
+        default_prob_dict[f"default_prob_{fund_name}"] = default_prob
 
     # Create a date range for the specified days
-    date_range = pd.date_range(start=last_day, end=end_date)
+    date_range = pd.date_range(start=first_prediction_day, end=end_date)
 
     # Create a pandas dataframe to store the default probabilities
     default_prob_df = pd.DataFrame(default_prob_dict, index=date_range)
@@ -354,3 +364,4 @@ def estimate_mc_count_default_prob(
 
     # Return the default probabilities for the next month
     return daily_default_prob_df
+
