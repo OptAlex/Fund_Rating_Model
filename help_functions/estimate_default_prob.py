@@ -4,6 +4,7 @@ from arch import arch_model
 from scipy.stats import norm, t
 from datetime import timedelta
 
+
 ############################################################################################
 # Help functions for the estimation of the default probabilities
 ############################################################################################
@@ -23,14 +24,16 @@ def get_fund_dict(df: pd.DataFrame) -> dict:
     return fund_dict
 
 
-def simulate_returns(garch_parameters, num_days_to_simulate):
+def simulate_returns(garch_parameters, num_days_to_simulate, p=1, q=1):
     """
     Function to simulate the future returns
+    :param q:
+    :param p:
     :param garch_parameters: alpha, beta, sigma
     :param num_days_to_simulate: number of days on which the simulation is performed
     :return: simulated returns for the number of prediction days
     """
-    sim_mod = arch_model(None, p=1, q=1, rescale="False")
+    sim_mod = arch_model(None, p=p, q=q, rescale="False")
     sim_data = sim_mod.simulate(garch_parameters, num_days_to_simulate)
     return sim_data["data"]
 
@@ -46,15 +49,16 @@ def run_garch_model(returns):
     res = am.fit(disp="off")
     return res
 
+
 ############################################################################################
-# Backtest of the default probabilites
+# Backtest of the default probabilities
 ############################################################################################
 def estimate_historical_stat_default_prob(
-    df: pd.DataFrame,
-    threshold: float,
-    window_size: int,
-    step: int,
-    score: str,
+        df: pd.DataFrame,
+        threshold: float,
+        window_size: int,
+        step: int,
+        score: str,
 ) -> pd.DataFrame:
     """
     Estimate the probability to default for each fund by using a statistical approach.
@@ -91,7 +95,7 @@ def estimate_historical_stat_default_prob(
             results = model.fit(disp="off")
             alpha = results.params["alpha[1]"]
             beta = results.params["beta[1]"]
-            sigma2 = results.conditional_volatility**2
+            sigma2 = results.conditional_volatility ** 2
 
             for j in range(start_idx, end_idx):
                 if j == start_idx:
@@ -108,15 +112,15 @@ def estimate_historical_stat_default_prob(
                 default_value = start_value * (1 - threshold)
                 if score == "z_score":
                     z_score = (
-                        np.log(default_value / current_value)
-                        + (alpha + beta * current_volatility) / 2
-                    ) / np.sqrt(current_volatility)
+                                      np.log(default_value / current_value)
+                                      + (alpha + beta * current_volatility) / 2
+                              ) / np.sqrt(current_volatility)
                     default_prob[j] += norm.sf(z_score)
                 else:
                     t_score = (
-                        np.log(default_value / current_value)
-                        + (alpha + beta * current_volatility) / 2
-                    ) / np.sqrt(current_volatility / window_size)
+                                      np.log(default_value / current_value)
+                                      + (alpha + beta * current_volatility) / 2
+                              ) / np.sqrt(current_volatility / window_size)
                     default_prob[j] += 1 - t.cdf(t_score, window_size - 1)
                 date[j] = current_date
 
@@ -182,22 +186,24 @@ def estimate_historical_count_default_prob(
     # ToDo add a confidence intervall
     return default_prob_df
 
+
 ############################################################################################
-# Forecast of the default probabilites
+# Forecast of the default probabilities
 ############################################################################################
 def estimate_mc_stat_default_prob(
-    df: pd.DataFrame,
-    threshold: float,
-    num_samples: int,
-    prediction_days: int,
-    score: str,
+        df: pd.DataFrame,
+        threshold: float,
+        num_samples: int,
+        prediction_days: int,
+        score: str,
 ) -> pd.DataFrame:
     """
     Perform a Monte Carlo Simulation and estimate the probability to default for each fund by using a statistical approach.
 
-    The future default probability is estimated on future returns from a Monte Carlo Simulation. For bootstrapping
-    the number of samples can be specified as needed. The probability to default is calculated by using the z- or t- score
-    (depends on the assumption).
+    The future default probability is estimated on future log returns from a Monte Carlo Simulation. For bootstrapping
+    the number of samples can be specified as needed.
+    The probability to default is calculated by using the z- or t- score (depends on the assumed distribution).
+
     :param df: df with the historical prices and returns
     :param threshold: threshold which defines the default of a fund
     :param num_samples: number of samples to bootstrap the data
@@ -232,7 +238,7 @@ def estimate_mc_stat_default_prob(
             sim_res = sim_mod.fit(disp="off")
             alpha = sim_res.params["alpha[1]"]
             beta = sim_res.params["beta[1]"]
-            sigma2 = sim_res.conditional_volatility**2
+            sigma2 = sim_res.conditional_volatility ** 2
 
             # Calculate the default probability for each day in the future
             start_value = prices[-1]
@@ -243,15 +249,15 @@ def estimate_mc_stat_default_prob(
 
                 if score == "z_score":
                     z_score = (
-                        np.log(default_value / current_value)
-                        + (alpha + beta * current_volatility) / 2
-                    ) / np.sqrt(current_volatility)
+                                      np.log(default_value / current_value)
+                                      + (alpha + beta * current_volatility) / 2
+                              ) / np.sqrt(current_volatility)
                     default_prob[j] += norm.sf(z_score)
                 else:
                     t_score = (
-                        np.log(default_value / current_value)
-                        + (alpha + beta * current_volatility) / 2
-                    ) / np.sqrt(current_volatility / prediction_days)
+                                      np.log(default_value / current_value)
+                                      + (alpha + beta * current_volatility) / 2
+                              ) / np.sqrt(current_volatility / prediction_days)
                     default_prob[j] += 1 - t.cdf(t_score, prediction_days - 1)
 
                 # Update the start value for the next day
@@ -281,10 +287,10 @@ def estimate_mc_stat_default_prob(
 
 
 def estimate_mc_count_default_prob(
-    df: pd.DataFrame,
-    threshold: float,
-    num_samples: int,
-    prediction_days: int,
+        df: pd.DataFrame,
+        threshold: float,
+        num_samples: int,
+        prediction_days: int,
 ) -> pd.DataFrame:
     """
     Perform a Monte Carlo Simulation and estimate the probability to default for each fund by counting the viaolations.
@@ -303,6 +309,8 @@ def estimate_mc_count_default_prob(
 
     last_day = pd.to_datetime(df["date"].iloc[-1])
     end_date = last_day + timedelta(days=prediction_days - 1)
+    # ToDo: the prediction for the first date can be observed in the data
+    # ToDo: add last_day + business day, not timedelta
 
     for fund_name, (prices, returns) in fund_dict.items():
         default_prob = np.zeros(prediction_days)
