@@ -323,7 +323,7 @@ def estimate_mc_count_cumulative_return(
                                                      )
         # Calculate the mean of the bootstrapped returns
         bootstrap_returns = np.mean(bootstrap_returns, axis=0)
-        bootstrap_returns = bootstrap_returns# * 100
+        bootstrap_returns = bootstrap_returns * 100
 
         # Fit the GARCH model to the returns
         res = run_garch_model(bootstrap_returns)
@@ -338,13 +338,14 @@ def estimate_mc_count_cumulative_return(
                 garch_parameters, num_days_to_simulate=prediction_days
             )
             # Store the simulated returns for each day
-            simulated_returns_array[i] = simulated_returns# / 100
+            simulated_returns_array[i] = simulated_returns / 100
 
         # Calculate the cumulative returns for each day
-        cumulative_returns_array = np.cumprod(1 + simulated_returns_array, axis=1)
+        cumulative_returns_array = np.cumsum(simulated_returns_array, axis=1)
+        print(cumulative_returns_array)
 
         # Count the number of times the threshold (negativ, therefore 1 + threshold) is violated in the cumulative returns
-        num_violations = np.sum(np.any(cumulative_returns_array - 1 <= threshold, axis=1))
+        num_violations = np.sum(np.any(cumulative_returns_array <= threshold, axis=1))
 
         # Calculate the default probability for the fund
         default_prob = num_violations / num_samples
