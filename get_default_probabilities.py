@@ -1,5 +1,6 @@
 import pandas as pd
-from help_functions.estimate_default_prob import estimate_historical_stat_default_prob, estimate_historical_count_default_prob, estimate_mc_stat_default_prob, estimate_mc_count_default_prob
+from help_functions.estimate_daily_default_prob import estimate_historical_stat_default_prob, estimate_historical_count_default_prob, estimate_mc_stat_default_prob, estimate_mc_count_default_prob
+from help_functions.estimate_cumulative_default_prob import estimate_mc_count_cumulative_return
 import seaborn as sns
 import matplotlib.pyplot as plt
 
@@ -9,16 +10,17 @@ df = (
     .dropna()
     .reset_index()
     .drop("index", axis=1)
-    .iloc[:300]
 )
 
 # Call function to estimate default probabilities
-estimate_mc_count_default_prob = estimate_mc_count_default_prob(
-    df=df, threshold=-0.005, num_samples=50, prediction_days=30
+estimate_mc_count_default_prob = estimate_mc_count_cumulative_return(
+    df=df, threshold=-0.05, num_samples=1000, prediction_days=252
 )
-"""estimate_historical_count_default_prob = estimate_historical_count_default_prob(
-    df=df, threshold=-0.01, window_size=30, step=1,
+"""
+estimate_historical_count_default_prob = estimate_mc_count_default_prob(
+    df=df, threshold=-0.05, num_samples=1000, prediction_days=252
 )
+
 estimate_historical_stat_default_prob = estimate_historical_stat_default_prob(
     df=df, threshold=-0.1, window_size=30, step=1, score="t_score"
 )
@@ -32,7 +34,7 @@ estimate_mc_stat_default_prob = estimate_mc_count_default_prob(
 # Print default probabilities
 print(estimate_mc_count_default_prob)
 
-
+"""
 # create a figure with three boxplots
 fig, ax = plt.subplots(figsize=(7, 4))
 sns.boxplot(data=estimate_mc_count_default_prob, ax=ax, palette='PuBu_r', showfliers=True, width=0.3, whis=[5, 95])
@@ -54,3 +56,5 @@ ax.tick_params(labelsize=10)
 
 # save the figure
 fig.savefig('mc_forecast_boxplot_all_funds.png', dpi=300, bbox_inches='tight')
+##"""
+

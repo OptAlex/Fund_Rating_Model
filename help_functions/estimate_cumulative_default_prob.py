@@ -1,9 +1,11 @@
 import pandas as pd
 import numpy as np
+import math
 from arch import arch_model
 from scipy.stats import norm, t
 from datetime import timedelta
-
+from recombinator.block_bootstrap import circular_block_bootstrap
+from recombinator.optimal_block_length import optimal_block_length
 
 ############################################################################################
 # Help functions for the estimation of the default probabilities
@@ -308,19 +310,20 @@ def estimate_mc_count_cumulative_return(
     fund_dict = get_fund_dict(df)
 
     for fund_name, (prices, returns) in fund_dict.items():
-        default_prob = np.zeros(prediction_days)
+        # Calculate optimal block length
+        b_star = optimal_block_length(returns)
+        b_star_cb = math.ceil(b_star[0].b_star_cb)
 
-        sample_size = 252
-        bootstrap_returns = []
-        for i in range(num_samples):
-            # Randomly select 252 returns from the data, with replacement
-            subset_indices = np.random.choice(len(returns), size=sample_size, replace=True)
-            subset = returns[subset_indices]
-            bootstrap_returns.append(subset)
-
+        # Perform bootstrapping of the data
+        bootstrap_returns = circular_block_bootstrap(returns,
+                                                     block_length=b_star_cb,
+                                                     replications=num_samples,
+                                                     sub_sample_length=252,
+                                                     replace=True
+                                                     )
         # Calculate the mean of the bootstrapped returns
         bootstrap_returns = np.mean(bootstrap_returns, axis=0)
-        bootstrap_returns = bootstrap_returns * 100
+        bootstrap_returns = bootstrap_returns# * 100
 
         # Fit the GARCH model to the returns
         res = run_garch_model(bootstrap_returns)
@@ -335,13 +338,13 @@ def estimate_mc_count_cumulative_return(
                 garch_parameters, num_days_to_simulate=prediction_days
             )
             # Store the simulated returns for each day
-            simulated_returns_array[i] = simulated_returns / 100
+            simulated_returns_array[i] = simulated_returns# / 100
 
         # Calculate the cumulative returns for each day
         cumulative_returns_array = np.cumprod(1 + simulated_returns_array, axis=1)
 
         # Count the number of times the threshold (negativ, therefore 1 + threshold) is violated in the cumulative returns
-        num_violations = np.sum(np.any(cumulative_returns_array <= 1 + threshold, axis=1))
+        num_violations = np.sum(np.any(cumulative_returns_array - 1 <= threshold, axis=1))
 
         # Calculate the default probability for the fund
         default_prob = num_violations / num_samples
@@ -350,7 +353,7 @@ def estimate_mc_count_cumulative_return(
         default_prob_dict[fund_name] = default_prob
 
     # Create a pandas dataframe to store the default probabilities
-    default_prob_df = pd.DataFrame.from_dict(default_prob_dict, orient='index', columns=['one_month_default_prob'])
+    default_prob_df = pd.DataFrame.from_dict(default_prob_dict, orient='index', columns=[f'f"{prediction_days}_days_default_prob"'])
 
     # Return the default probabilities
     return default_prob_df

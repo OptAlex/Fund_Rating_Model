@@ -1,8 +1,11 @@
 import pandas as pd
 import numpy as np
+import math
 from arch import arch_model
 from scipy.stats import norm, t
 from datetime import timedelta
+from recombinator.block_bootstrap import circular_block_bootstrap
+from recombinator.optimal_block_length import optimal_block_length
 
 
 ############################################################################################
@@ -314,14 +317,17 @@ def estimate_mc_count_default_prob(
     for fund_name, (prices, returns) in fund_dict.items():
         default_prob = np.zeros(prediction_days)
 
-        sample_size = 252
-        bootstrap_returns = []
-        for i in range(num_samples):
-            # Randomly select 252 returns from the data, with replacement
-            subset_indices = np.random.choice(len(returns), size=sample_size, replace=True)
-            subset = returns[subset_indices]
-            bootstrap_returns.append(subset)
+        # Calculate optimal block length
+        b_star = optimal_block_length(returns)
+        b_star_cb = math.ceil(b_star[0].b_star_cb)
 
+        # Perform bootstrapping of the data
+        bootstrap_returns = circular_block_bootstrap(returns,
+                                                     block_length=b_star_cb,
+                                                     replications=num_samples,
+                                                     sub_sample_length=252,
+                                                     replace=True
+                                                     )
         # Calculate the mean of the bootstrapped returns
         bootstrap_returns = np.mean(bootstrap_returns, axis=0)
         bootstrap_returns = bootstrap_returns * 100
