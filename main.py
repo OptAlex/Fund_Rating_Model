@@ -2,9 +2,14 @@ from help_functions.help_data_transformation import create_log_returns
 from help_functions.help_functions_default_prob import calc_threshold_violation
 import pandas as pd
 from const import *
+from help_functions.run_R_code import run_r_script
 
 
 df_log_returns = create_log_returns("ETF_List.xlsx")
+
+# Run the R script to perform Copula-GARCH
+# Change 'script.R' with path to R code
+df_sim_returns = run_r_script('script.R', {'df_log_returns': df_log_returns})
 
 # Copula model
 #

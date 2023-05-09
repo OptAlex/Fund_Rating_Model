@@ -63,8 +63,8 @@ def log_returns_to_normal_returns(log_returns_df):
 def get_fund_dict(df: pd.DataFrame) -> dict:
     """
     Create a dictionary of all funds with returns.
-    :param df: df with the historical returns
-    :return: dictionary with the fund name and the historical returns of the fund
+    :param df: df with the log returns
+    :return: dictionary with the fund name and the log returns of the fund
     """
     fund_dict = {}
 
