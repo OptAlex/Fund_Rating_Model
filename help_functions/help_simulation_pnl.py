@@ -10,7 +10,7 @@ def simulate_pnl(df: pd.DataFrame) -> pd.DataFrame:
     """
     # Get normal returns to calculate the portfolio return by using the weighted average
     normal_returns = log_returns_to_normal_returns(df)
-    # calculate the mean of each row to get the weighted average return
+    # calculate the mean of each row to get the weighted average return (we weight all funds equally)
     portfolio_return = normal_returns.mean(axis=1)
     cum_returns = np.cumprod(1 + portfolio_return)
     # substract -1 from all values as we add 1 when calculating the cumprod
