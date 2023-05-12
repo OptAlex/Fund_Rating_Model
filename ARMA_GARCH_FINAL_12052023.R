@@ -1,4 +1,11 @@
 # Loading all the necessary libraries
+# install.packages("copula")
+# install.packages("rugarch")
+# install.packages("nortest")
+# install.packages("MASS")
+# install.packages("stats")
+# install.packages("forecast")
+
 require(copula)
 require(rugarch)
 library(nortest)
@@ -8,9 +15,10 @@ library(forecast)
 
 
 # Data loading, cleaning, and defininf dimensions and no. of simulations
-setwd("C:/Users/franp/Desktop/ARMA_GARCH_Copula/cleaned_data")
+setwd("/Users/alexander/PycharmProjects/marketRisk/data")
 
-data <- read.csv("funds_log_returns.csv")
+data <- read.csv("log_returns.csv")
+data <- data[, -which(names(data) == "Date")]
 d <- ncol(data)
 n <- 252
 
@@ -30,7 +38,8 @@ hist_resid_empir <- pobs(hist_resid_stand) # pobs() is in this case used to calc
                              # to fit to the copula
 
 # Creating the fit copula parameter to fit to the copula
-fitcop <- fitCopula(ellipCopula("normal", dim = d), data = hist_resid_empir, method = "mpl")
+fitcop <- fitCopula(ellipCopula("t", dim = d), data = hist_resid_empir, method = "mpl")
+df <- fitcop@estimate[2]
 
 # Creating the object of fitted copula residuals 
 sim_resid <- rCopula(n, fitcop@copula)
@@ -41,11 +50,11 @@ sim_resid <- rCopula(n, fitcop@copula)
 # points(sim_resid[,1:2], xlab = expression(hat(U)[sim]), ylab = expression(hat(U)[sim]), col = 'red')
 
 # Defining the df based on the fitcop params and standardizing the simulated residuals
-# nu. = rep(6.5, d)
-# sim_resid_stand <- sapply(1:d, function(j) sqrt((nu.[j]-2)/nu.[j]) * qt(sim_resid[,j], df = nu.[j]))
+nu. = rep(df, d)
+sim_resid_stand <- sapply(1:d, function(j) sqrt((nu.[j]-2)/nu.[j]) * qt(sim_resid[,j], df = nu.[j]))
 
 # Standardizing the simulated residuals from the gaussian copula
-sim_resid_stand <- qnorm(sim_resid)
+# sim_resid_stand <- qnorm(sim_resid)
 
 # Feeding the simulated residuals back to the ARMA + GARCH model
 sim <- lapply(1:d, function(j)
@@ -58,7 +67,7 @@ simulated_returns <- sapply(sim, function(x) fitted(x)) # simulated series X_t (
 # matplot(simulated_returns, type = "l", xlab = "t", ylab = expression(X[t]))
 
 # Cumulating the simulated returns
-simulated_returns_cumsum <- apply(simulated_returns, 2, function(x) cumsum(x))
+#simulated_returns_cumsum <- apply(simulated_returns, 2, function(x) cumsum(x))
 # matplot(simulated_returns_cumsum, type = "l", xlab = "t", ylab = expression(X[t_cumsum]))
 
 # Plotting the standardized historical residuals vs the standardized simulated residuals
@@ -73,4 +82,7 @@ colnames(simulated_returns) <- substr(colnames(simulated_returns), 12, nchar(col
 # points(simulated_returns[,1:2], xlab = expression(hat(U)[sim]), ylab = expression(hat(U)[sim]), col = 'red')
 
 # Writing the output data to a csv format for further computation
-write.csv(simulated_returns, file = "sim_returns_df.csv", row.names = FALSE)
+simulated_returns <- as.data.frame(simulated_returns)  # Convert to data frame if necessary
+
+# Writing the output data to a csv format for further computation
+# write.csv(simulated_returns, file = "sim_returns_df.csv", row.names = FALSE)
