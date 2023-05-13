@@ -8,8 +8,8 @@ from help_functions.help_data_transformation import get_fund_dict
 def calc_threshold_violation(df, threshold):
     """
     Calculate if a fund violates the threshold.
-    :param df: df with the historical returns
-    :param threshold: threshold which defines the default of a fund; default if <; i.e. -0.1 for 10 percent loss
+    :param df: df with returns
+    :param threshold: threshold which defines the default of a fund; default if <; i.e. 0.1 for 10 percent loss
     :return: df with 1, if violated, 0 else
     """
     fund_dict = get_fund_dict(df)
@@ -19,7 +19,7 @@ def calc_threshold_violation(df, threshold):
         arr_cumulative_returns = np.cumsum(returns)
 
         # 1 if threshold strictly violated, 0 else
-        binary_violations = np.sum(np.any(arr_cumulative_returns < threshold))
+        binary_violations = np.sum(np.any(arr_cumulative_returns < -threshold))
         dict_violations[fund_name].append(binary_violations)
 
     df_defaults = pd.DataFrame(dict_violations)
