@@ -10,7 +10,7 @@ import multiprocessing
 df_hist_log_returns = create_log_returns("data/ETF_List.xlsx")
 SIM_NUMBER = 5
 THRESHOLDS = [0.01, 0.05, 0.10, 0.15, 0.20, 0.30, 0.50]  # change to log
-CVaR_level = [0.1, 0.5, 1, 5, 10]
+CVAR_LEVEL = [0.1, 0.5, 1, 5, 10]
 bool_to_excel = False
 
 # Create a bootstrapped sample of the log returns.
@@ -19,12 +19,7 @@ bootstrapped_returns = bootstrap_returns(df=df_hist_log_returns, bootstrap_sampl
 #ToDO Alex, this is the final CVaR calc. You can put the code to the right place (bootstrap_returns was our dummy).
 # currently we on get the CVaRs. Do we also need a distribution or plot?
 # Should we use the standard returns for the CVaR? Or should we go consistent with log?
-CVaR_estimations = []
-for level in CVaR_level:
-    CVaR = get_CVaR(bootstrapped_returns, level)
-    CVaR_estimations.append(CVaR)
 
-CVaR = pd.DataFrame({'CVaR_{}%'.format(100-level): [cvar] for level, cvar in zip(CVaR_level, CVaR_estimations)})
 
 # Define the function to be executed in parallel
 def run_simulation(number_simulation):
@@ -57,6 +52,8 @@ if __name__ == "__main__":
     # Close the Pool
     pool.close()
     pool.join()
+
+    lst_ticker_column_names = sim_results[0].columns.tolist()
 
     print("Done with simulating log returns and threshold verification.")
 
@@ -144,6 +141,15 @@ if __name__ == "__main__":
     df_weighted_avg_log_default_prob["default_prob_portf"] = df_weighted_avg_log_threshold_viol.sum(axis=1)/SIM_NUMBER
     df_weighted_avg_log_default_prob.index = [f"Threshold_{threshold * 100}" for threshold in THRESHOLDS]
 
+    # calculate the CVaR
+    CVaR_estimations = []
+    for level in CVAR_LEVEL:
+        CVaR = get_CVaR(df_all_weighted_avg_log_returns, level)
+        CVaR_estimations.append(CVaR)
+
+    CVaR = pd.DataFrame({'CVaR_{}%'.format(100 - level): [cvar] for level, cvar in zip(CVAR_LEVEL, CVaR_estimations)})
+
+
     # Save all converted log returns to a single Excel file with different sheets
     with pd.ExcelWriter("converted_log_returns.xlsx") as writer:
         for var_name, df_log_returns in converted_returns_dict.items():
@@ -159,5 +165,4 @@ if __name__ == "__main__":
     print("Results written to Excel files.")
 
 
-##
 
