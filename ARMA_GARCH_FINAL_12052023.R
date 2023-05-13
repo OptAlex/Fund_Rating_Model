@@ -20,7 +20,7 @@ setwd("/Users/alexander/PycharmProjects/marketRisk/data")
 data <- read.csv("log_returns.csv")
 data <- data[, -which(names(data) == "Date")]
 d <- ncol(data)
-n <- 252
+n <- 4
 
 # Store column names of data
 column_names <- colnames(data)
@@ -38,12 +38,11 @@ hist_resid_empir <- pobs(hist_resid_stand) # pobs() is in this case used to calc
                              # to fit to the copula
 
 # Creating the fit copula parameter to fit to the copula
-fitcop <- fitCopula(ellipCopula("t", dim = d), data = hist_resid_empir, method = "mpl")
+fitcop <- fitCopula(ellipCopula("t", dim = d), data = hist_resid_empir, method = "mpl", optim.method = "SANN")
 df <- fitcop@estimate[2]
 
 # Creating the object of fitted copula residuals 
 sim_resid <- rCopula(n, fitcop@copula)
-
 
 # Plotting the historical vs simulated residuals from the copula
 # plot(hist_resid_empir[,1:2], xlab = expression(hat(U)[1]), ylab = expression(hat(U)[2]), col = 'blue')
@@ -76,7 +75,6 @@ simulated_returns <- sapply(sim, function(x) fitted(x)) # simulated series X_t (
 
 # Transforming the column names to TICKERS of each fund respectively
 colnames(simulated_returns) = column_names
-colnames(simulated_returns) <- substr(colnames(simulated_returns), 12, nchar(colnames(simulated_returns)))
 
 # plot(data[,1:2], xlab = expression(hat(U)[1]), ylab = expression(hat(U)[2]), col = 'blue')
 # points(simulated_returns[,1:2], xlab = expression(hat(U)[sim]), ylab = expression(hat(U)[sim]), col = 'red')

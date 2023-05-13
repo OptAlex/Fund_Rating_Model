@@ -7,8 +7,9 @@ from help_functions.run_R_code import call_r
 import numpy as np
 import multiprocessing
 
-df_hist_log_returns = create_log_returns("data/ETF_List.xlsx")
-SIM_NUMBER = 5
+df_hist_log_returns = create_log_returns("data/ETF_List_short.xlsx", bool_drop_date=False)
+df_hist_log_returns.to_csv("data/log_returns.csv")
+SIM_NUMBER = 3
 THRESHOLDS = [0.01, 0.05, 0.10, 0.15, 0.20, 0.30, 0.50]  # change to log
 CVAR_LEVEL = [0.1, 0.5, 1, 5, 10]
 bool_to_excel = False

@@ -42,26 +42,6 @@ def create_log_returns(path_raw_data_name, bool_drop_date=True):
 
     return df_log_returns
 
-
-def log_returns_to_normal_returns(log_returns_df):
-    """
-    Converts log returns in a DataFrame to normal returns and returns a new DataFrame.
-    :param log_returns_df: A DataFrame of log returns where the columns are named after the tickers.
-    :return: pandas.DataFrame: A new DataFrame of normal returns where the columns are named after the tickers.
-    """
-    normal_returns_df = pd.DataFrame()
-
-    # Convert each column of log returns to normal returns
-    for col in log_returns_df.columns:
-        log_returns = log_returns_df[col]
-        normal_returns = np.exp(log_returns) - 1
-        normal_returns_df[col] = normal_returns
-
-    return normal_returns_df
-
-
-# normal_returns_df = log_returns_df.applymap(lambda x: np.exp(x) - 1)
-
 def get_fund_dict(df: pd.DataFrame) -> dict:
     """
     Create a dictionary of all funds with returns.
