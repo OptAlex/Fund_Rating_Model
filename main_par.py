@@ -9,7 +9,7 @@ import multiprocessing
 
 df_hist_log_returns = create_log_returns("data/ETF_List.xlsx")
 SIM_NUMBER = 5
-THRESHOLDS = [-0.01, -0.05, -0.10, -0.15, -0.20, -0.30, -0.50]
+THRESHOLDS = [0.01, 0.05, 0.10, 0.15, 0.20, 0.30, 0.50]  # change to log
 CVaR_level = [0.1, 0.5, 1, 5, 10]
 bool_to_excel = False
 
@@ -105,6 +105,7 @@ if __name__ == "__main__":
     # Create a writer for the Excel file
     converted_returns_writer = pd.ExcelWriter("converted_log_returns.xlsx")
 
+    df_all_weighted_avg_log_returns = pd.DataFrame()
     for i, sim_result in enumerate(sim_results):
         # Convert log returns to standard returns
         df_standard_returns = convert_returns(sim_result, bool_to_log=False)
@@ -122,15 +123,26 @@ if __name__ == "__main__":
         # Convert standard returns back to log returns
         df_weighted_avg_log_returns = convert_returns(df_weighted_avg_standard_returns)
 
+        # aggregate all simulated portfolio log returns into one df
+        sim_name = f"Simulation {i + 1}"
+        df_all_weighted_avg_log_returns = pd.concat([df_all_weighted_avg_log_returns, df_weighted_avg_log_returns], axis=1)
+        df_all_weighted_avg_log_returns.rename(columns={0: sim_name}, inplace=True)
+
         # Save the log returns to the Excel writer with a separate sheet for each simulation
-        sheet_name = f"Simulation {i + 1}"
-        df_weighted_avg_log_returns.to_excel(converted_returns_writer, sheet_name=sheet_name, index=False)
+        df_weighted_avg_log_returns.to_excel(converted_returns_writer, sheet_name=sim_name, index=False)
 
     # Save the Excel file with all the converted log returns
     converted_returns_writer.save()
 
-    # ToDo: df_weighted_avg_log_returns are the log returns for each simulation of the overall portfolio. Plug them
-    #  into the threshold violation to calc the portfolio default prob
+    # calculate the default probability of the overall portfolio
+    df_weighted_avg_log_threshold_viol = pd.DataFrame()
+    df_weighted_avg_log_default_prob = pd.DataFrame(columns=["default_prob_portf"])
+    for threshold in THRESHOLDS:
+        df_defaults_portf = calc_threshold_violation(df_all_weighted_avg_log_returns, threshold)
+        df_weighted_avg_log_threshold_viol = pd.concat([df_weighted_avg_log_threshold_viol, df_defaults_portf])
+
+    df_weighted_avg_log_default_prob["default_prob_portf"] = df_weighted_avg_log_threshold_viol.sum(axis=1)/SIM_NUMBER
+    df_weighted_avg_log_default_prob.index = [f"Threshold_{threshold * 100}" for threshold in THRESHOLDS]
 
     # Save all converted log returns to a single Excel file with different sheets
     with pd.ExcelWriter("converted_log_returns.xlsx") as writer:
