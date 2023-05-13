@@ -4,3 +4,4 @@
 black
 pandas
 numpy
+rpy2

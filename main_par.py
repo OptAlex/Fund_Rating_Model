@@ -1,5 +1,6 @@
 from help_functions.help_data_transformation import create_log_returns, convert_returns, calculate_portfolio_return
 from help_functions.help_functions_default_prob import calc_threshold_violation
+from help_functions.help_bootstrap import bootstrap_returns
 import pandas as pd
 from help_functions.run_R_code import call_r
 import numpy as np
@@ -10,6 +11,10 @@ SIM_NUMBER = 5
 THRESHOLDS = [-0.01, -0.05, -0.10, -0.15, -0.20, -0.30, -0.50]
 bool_to_excel = False
 
+# Create a bootstrapped sample of the log returns.
+df_hist_log_returns = df_hist_log_returns.dropna()
+#ToDO Can we implement a dropna in the create log returns function? Otherwise bootstrapping is not working
+bootstrapped_returns = bootstrap_returns(df=df_hist_log_returns, bootstrap_samples=1, bootstrap_days=252)
 
 # Define the function to be executed in parallel
 def run_simulation(number_simulation):
@@ -130,4 +135,7 @@ if __name__ == "__main__":
             sim_result.to_excel(writer, sheet_name=sheet_name, index=False)
 
     print("Results written to Excel files.")
+
+
+##
 
