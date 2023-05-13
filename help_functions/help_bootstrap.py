@@ -17,7 +17,10 @@ def bootstrap_returns(
     :param bootstrap_days: number of days each bootstrap sample has.
     :return: df with bootstrapped returns.
     """
+    # Create an empty DataFrame to store the bootstrapped returns
+    bootstrap_df = pd.DataFrame()
 
+    # Get a dictionary of fund names and their corresponding returns
     fund_dict = get_fund_dict(df)
 
     for fund_name, returns in fund_dict.items():
@@ -34,4 +37,13 @@ def bootstrap_returns(
             replace=True,
         )
 
-    return bootstrap_returns
+        # Reshape the bootstrap returns from (1:252) to (252:1)
+        bootstrap_returns = bootstrap_returns.reshape(-1, 1)
+
+        # Convert the bootstrapped returns to a DataFrame
+        bootstrap_returns_df = pd.DataFrame(bootstrap_returns, columns=[f"{fund_name}"])
+
+        # Append the bootstrapped returns to the main DataFrame
+        bootstrap_df = pd.concat([bootstrap_df, bootstrap_returns_df], axis=1)
+
+    return bootstrap_df
