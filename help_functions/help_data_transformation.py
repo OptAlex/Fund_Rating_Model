@@ -42,6 +42,7 @@ def create_log_returns(path_raw_data_name, bool_drop_date=True):
 
     return df_log_returns
 
+
 def get_fund_dict(df: pd.DataFrame) -> dict:
     """
     Create a dictionary of all funds with returns.

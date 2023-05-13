@@ -10,6 +10,6 @@ def get_CVaR(df, level):
     :return: CVaR for the specified percentile of the pnl.
     """
     # pnl = df.sum(axis=0)
-    cumulative_returns = np.cumprod(df+1) - 1
+    cumulative_returns = np.cumprod(df + 1) - 1
     CVaR = np.percentile(a=cumulative_returns, q=level)
     return CVaR

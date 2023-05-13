@@ -33,7 +33,9 @@ def bootstrap_returns(df, bootstrap_samples=1):
         )
 
         bootstrap_returns_reshape = bootstrap_returns.reshape(-1, 1)
-        bootstrap_returns_df = pd.DataFrame(bootstrap_returns_reshape, columns=[f"{fund_name}"])
+        bootstrap_returns_df = pd.DataFrame(
+            bootstrap_returns_reshape, columns=[f"{fund_name}"]
+        )
         bootstrap_df = pd.concat([bootstrap_df, bootstrap_returns_df], axis=1)
 
     return bootstrap_df
