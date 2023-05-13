@@ -17,8 +17,6 @@ library(forecast)
 # Data loading, cleaning, and defininf dimensions and no. of simulations
 setwd("/Users/alexander/PycharmProjects/marketRisk/data")
 
-# data <- read.csv("log_returns.csv")
-data <- data[, -which(names(data) == "Date")]
 d <- ncol(data)
 n <- 252
 
