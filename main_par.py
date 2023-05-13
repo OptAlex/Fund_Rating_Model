@@ -1,6 +1,7 @@
 from help_functions.help_data_transformation import create_log_returns, convert_returns, calculate_portfolio_return
 from help_functions.help_functions_default_prob import calc_threshold_violation
 from help_functions.help_bootstrap import bootstrap_returns
+from help_functions.help_CVaR import get_CVaR
 import pandas as pd
 from help_functions.run_R_code import call_r
 import numpy as np
@@ -9,12 +10,21 @@ import multiprocessing
 df_hist_log_returns = create_log_returns("data/ETF_List.xlsx")
 SIM_NUMBER = 5
 THRESHOLDS = [-0.01, -0.05, -0.10, -0.15, -0.20, -0.30, -0.50]
+CVaR_level = [0.1, 0.5, 1, 5, 10]
 bool_to_excel = False
 
 # Create a bootstrapped sample of the log returns.
-df_hist_log_returns = df_hist_log_returns.dropna()
-#ToDO Can we implement a dropna in the create log returns function? Otherwise bootstrapping is not working
 bootstrapped_returns = bootstrap_returns(df=df_hist_log_returns, bootstrap_samples=1, bootstrap_days=252)
+
+#ToDO Alex, this is the final CVaR calc. You can put the code to the right place (bootstrap_returns was our dummy).
+# currently we on get the CVaRs. Do we also need a distribution or plot?
+# Should we use the standard returns for the CVaR? Or should we go consistent with log?
+CVaR_estimations = []
+for level in CVaR_level:
+    CVaR = get_CVaR(bootstrapped_returns, level)
+    CVaR_estimations.append(CVaR)
+
+CVaR = pd.DataFrame({'CVaR_{}%'.format(100-level): [cvar] for level, cvar in zip(CVaR_level, CVaR_estimations)})
 
 # Define the function to be executed in parallel
 def run_simulation(number_simulation):

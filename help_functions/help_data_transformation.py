@@ -31,7 +31,7 @@ def create_log_returns(path_raw_data_name, bool_drop_date=True):
     df_raw_data = pd.read_excel(path_raw_data_name)
     df_data = input_data(df_raw_data)
 
-    df_log_returns = np.log(df_data / df_data.shift(1)).diff()
+    df_log_returns = np.log(df_data).diff()
     df_log_returns = df_log_returns[1:]
 
     if bool_drop_date:
