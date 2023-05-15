@@ -23,7 +23,7 @@ def input_data(df, date_column="Date"):
 def create_log_returns(path_raw_data_name, bool_drop_date=True):
     """
     Create log returns out of historical prices time series.
-    :param str_raw_data_name: name of the Excel file
+    :param path_raw_data_name: path of the Excel file
     :param bool_drop_date: if true, drop date column
     :return: dataframe with col = tickers, rows = days, values = log returns
     """
@@ -43,7 +43,7 @@ def create_log_returns(path_raw_data_name, bool_drop_date=True):
     return df_log_returns
 
 
-def get_fund_dict(df: pd.DataFrame) -> dict:
+def get_fund_dict(df):
     """
     Create a dictionary of all funds with returns.
     :param df: df with the log returns
