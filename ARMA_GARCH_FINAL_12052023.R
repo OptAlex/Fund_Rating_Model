@@ -8,7 +8,7 @@
 # install.packages("foreach")
 # install.packages("jsonlite")
 
-
+suppressPackageStartupMessages({
 require(copula)
 require(rugarch)
 library(nortest)
@@ -17,6 +17,7 @@ library(stats)
 library(forecast)
 library(foreach)
 library(jsonlite)
+})
 
 # Data loading, cleaning, and defininf dimensions and no. of simulations
 setwd("/Users/alexander/PycharmProjects/marketRisk/data")
@@ -44,7 +45,7 @@ fitcop <- fitCopula(ellipCopula("t", dim = d), data = hist_resid_empir, method =
 df <- fitcop@estimate[2]
 
 total_simulations <- list()
-for (i in 1:100){
+for (i in 1:10){
   # Creating the object of fitted copula residuals
   sim_resid <- rCopula(n, fitcop@copula)
 
@@ -96,6 +97,6 @@ for (i in 1:100){
 # Save the total_simulations list as a JSON file
 json_file_path <- "total_simulations.json"
 json_data <- toJSON(total_simulations)
-write(json_data, file = json_file_path)
+#write(json_data, file = json_file_path)
 
-cat("Total simulations saved to:", json_file_path, "\n")
+#cat("Total simulations saved to:", json_file_path, "\n")
