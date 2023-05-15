@@ -6,7 +6,9 @@ def get_CVaR(df, level, stop_loss, threshold):
     """
     Get the CVaR out of the pnl simulations.
     :param df: DataFrame with simulated pnl
-    :param level: level to estimate the CVaR
+    :param level: Level to estimate the CVaR
+    :param stop_loss: Defines a stop loss for the portfolio
+    :param threshold: Defines the threshold of the stop loss
     :return: CVaR for the specified percentile of the pnl.
     """
     cumulative_returns = np.cumprod(df + 1, axis=0) - 1
