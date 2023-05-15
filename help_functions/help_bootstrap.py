@@ -1,3 +1,4 @@
+# help functions related to bootstrapping
 import pandas as pd
 import math
 from recombinator.block_bootstrap import moving_block_bootstrap

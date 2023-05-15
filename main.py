@@ -147,8 +147,8 @@ if __name__ == "__main__":
         df_all_CVaR.to_excel("df_all_CVaR_without_stop_loss.xlsx")
         df_all_CVaR_estimations_stop_loss.to_excel("df_all_CVaR_stop_loss.xlsx")
 
-        # Individual default probs to excel. Only for the first 20 because of sheet limitations of excel
+        # Individual default probs to excel. Only for the first 100 because of sheet limitations of Excel
         writer = pd.ExcelWriter("df_indiv_fonds_default_prob.xlsx", engine="xlsxwriter")
-        for i, df in enumerate(all_indiv_fonds_default_prob_results[:20]):
+        for i, df in enumerate(all_indiv_fonds_default_prob_results[:100]):
             df.to_excel(writer, sheet_name=f"Simulation{i + 1}", index=True)
         writer._save()
