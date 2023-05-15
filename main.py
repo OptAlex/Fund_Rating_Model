@@ -8,8 +8,7 @@ from help_functions.help_functions_default_prob import calc_default_probs
 from help_functions.help_bootstrap import bootstrap_returns
 from help_functions.help_CVaR import get_CVaR
 import pandas as pd
-from help_functions.run_R_code import call_r
-import numpy as np
+from help_functions.help_R_code import call_r
 import datetime
 import json
 import multiprocessing
@@ -27,9 +26,6 @@ def run_simulation(data):
         inputs={"data": data},
         output_var="json_data",
     )
-    # df_sim_log_returns = pd.DataFrame(
-    #     {col: np.ravel(arr) for col, arr in arr_sim_log_returns.items()}
-    # )
     print("Done with simulation")
 
     return arr_sim_log_returns
@@ -69,9 +65,7 @@ def process_iteration(i):
 
     for df in df_simulations:
         df_standard_returns = convert_returns(df, bool_to_log=False)
-        df_standard_portf_returns = calculate_portfolio_return(
-            df_standard_returns
-        )
+        df_standard_portf_returns = calculate_portfolio_return(df_standard_returns)
         df_weighted_avg_log_portf_returns.append(
             convert_returns(df_standard_portf_returns)
         )
@@ -153,8 +147,8 @@ if __name__ == "__main__":
         df_all_CVaR.to_excel("df_all_CVaR_without_stop_loss.xlsx")
         df_all_CVaR_estimations_stop_loss.to_excel("df_all_CVaR_stop_loss.xlsx")
 
-        # Individual default probs to excel. Only for the first 20 because of sheet limitations of excel 
-        writer = pd.ExcelWriter('df_indiv_fonds_default_prob.xlsx', engine='xlsxwriter')
+        # Individual default probs to excel. Only for the first 20 because of sheet limitations of excel
+        writer = pd.ExcelWriter("df_indiv_fonds_default_prob.xlsx", engine="xlsxwriter")
         for i, df in enumerate(all_indiv_fonds_default_prob_results[:20]):
-            df.to_excel(writer, sheet_name=f'Simulation{i + 1}', index=True)
+            df.to_excel(writer, sheet_name=f"Simulation{i + 1}", index=True)
         writer._save()

@@ -5,6 +5,7 @@ import numpy as np
 from help_functions.help_data_transformation import get_fund_dict
 from const import THRESHOLDS
 
+
 def calc_threshold_violation(df, threshold):
     """
     Calculate if a fund violates the threshold.
@@ -25,6 +26,7 @@ def calc_threshold_violation(df, threshold):
     df_defaults = pd.DataFrame(dict_violations)
 
     return df_defaults
+
 
 def calc_default_probs(dfs, bool_indiv=False):
     # Default prob of individual funds
@@ -51,4 +53,3 @@ def calc_default_probs(dfs, bool_indiv=False):
         df_all_def_prob_sorted = df_all_def_prob.sort_index(axis=0)
 
     return df_all_def_prob_sorted
-

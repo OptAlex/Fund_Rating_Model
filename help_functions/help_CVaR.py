@@ -1,8 +1,6 @@
 import numpy as np
 import pandas as pd
 
-from help_functions.help_confidence_interval import get_confidence_interval
-
 
 def get_CVaR(df, level, stop_loss=False, threshold=None):
     """
@@ -11,8 +9,7 @@ def get_CVaR(df, level, stop_loss=False, threshold=None):
     :param level: Level to estimate the CVaR
     :param stop_loss: Defines a stop loss for the portfolio
     :param threshold: Defines the threshold of the stop loss
-    :param confidence_level: The confidence level in percentage (default to 95)
-    :return: A tuple (CVaR, (lower_ci, upper_ci)) representing the CVaR value and its confidence interval.
+    :return: CVaR
     """
     final_returns = pd.DataFrame()
     cumulative_returns = np.cumprod(df + 1, axis=0) - 1
