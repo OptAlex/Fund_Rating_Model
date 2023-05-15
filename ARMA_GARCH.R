@@ -45,7 +45,7 @@ fitcop <- fitCopula(ellipCopula("t", dim = d), data = hist_resid_empir, method =
 df <- fitcop@estimate[2]
 
 total_simulations <- list()
-for (i in 1:10){
+for (i in 1:1000){
   # Creating the object of fitted copula residuals
   sim_resid <- rCopula(n, fitcop@copula)
 

@@ -14,8 +14,7 @@ import json
 import multiprocessing
 from const import *
 
-df_hist_log_returns = create_log_returns("data/ETF_List_short.xlsx")
-# df_hist_log_returns.to_csv("data/log_returns.csv")
+df_hist_log_returns = create_log_returns("data/ETF_List.xlsx")
 
 times = []
 
@@ -150,5 +149,5 @@ if __name__ == "__main__":
         # Individual default probs to excel. Only for the first 100 because of sheet limitations of Excel
         writer = pd.ExcelWriter("df_indiv_fonds_default_prob.xlsx", engine="xlsxwriter")
         for i, df in enumerate(all_indiv_fonds_default_prob_results[:100]):
-            df.to_excel(writer, sheet_name=f"Simulation{i + 1}", index=True)
+            df.to_excel(writer, sheet_name=f"Simulation_{i + 1}", index=True)
         writer._save()
