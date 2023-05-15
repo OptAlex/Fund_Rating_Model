@@ -79,7 +79,7 @@ for (i in 1:10){
   # points(sim_resid_stand[,1:2], xlab = expression(hat(U)[sim]), ylab = expression(hat(U)[sim]), col = 'red')
 
   # Transforming the column names to TICKERS of each fund respectively
-  colnames(simulated_returns) = column_names
+  colnames(simulated_returns) <- column_names
 
   # plot(data[,1:2], xlab = expression(hat(U)[1]), ylab = expression(hat(U)[2]), col = 'blue')
   # points(simulated_returns[,1:2], xlab = expression(hat(U)[sim]), ylab = expression(hat(U)[sim]), col = 'red')
