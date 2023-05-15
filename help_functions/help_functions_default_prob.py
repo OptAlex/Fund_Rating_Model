@@ -3,7 +3,7 @@
 import pandas as pd
 import numpy as np
 from help_functions.help_data_transformation import get_fund_dict
-
+from const import THRESHOLDS
 
 def calc_threshold_violation(df, threshold):
     """
@@ -25,3 +25,30 @@ def calc_threshold_violation(df, threshold):
     df_defaults = pd.DataFrame(dict_violations)
 
     return df_defaults
+
+def calc_default_probs(dfs, bool_indiv=False):
+    # Default prob of individual funds
+    df_all_defaults = pd.DataFrame()
+    for threshold in THRESHOLDS:
+        for i, df in enumerate(dfs):
+            sim_results = df
+
+            df_default = calc_threshold_violation(df=sim_results, threshold=threshold)
+            str_threshold = f"Threshold_{round(threshold * 100, 2)}%"
+            if threshold < 0.1:
+                str_threshold = f"Threshold_0{round(threshold * 100, 2)}%"
+            df_default.index = [str_threshold]
+            df_all_defaults = pd.concat([df_all_defaults, df_default])
+
+    if bool_indiv:
+        df_all_def_prob = df_all_defaults.groupby(
+            df_all_defaults.index
+        ).mean()  # default prob
+        df_all_def_prob_sorted = df_all_def_prob.sort_index(axis=0)
+
+    else:
+        df_all_def_prob = df_all_defaults.sum(axis=1) / df_all_defaults.shape[1]
+        df_all_def_prob_sorted = df_all_def_prob.sort_index(axis=0)
+
+    return df_all_def_prob_sorted
+
