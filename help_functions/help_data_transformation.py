@@ -75,6 +75,12 @@ def convert_returns(df, bool_to_log=True):
 
 
 def calculate_portfolio_return(df_returns, weights=None):
+    """
+    Caculate portfolio returns using weighted average
+    :param df_returns: df with standard returns
+    :param weights: asset weights
+    :return: overall portfolio return
+    """
     # If weights are not provided, use equal weights
     if weights is None:
         weights = np.ones(len(df_returns.columns)) / len(df_returns.columns)

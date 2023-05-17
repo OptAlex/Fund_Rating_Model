@@ -29,6 +29,12 @@ def calc_threshold_violation(df, threshold):
 
 
 def calc_default_probs(dfs, bool_indiv=False):
+    """
+    Calculate default probabilities based on threshold violations
+    :param dfs: dataframe with simulations
+    :param bool_indiv: individual default probabilities if True
+    :return: default probabilities
+    """
     # Default prob of individual funds
     df_all_defaults = pd.DataFrame()
     for threshold in THRESHOLDS:

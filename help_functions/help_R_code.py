@@ -14,10 +14,11 @@ def call_r(script_content, inputs, output_var):
     r = robjects.r
     # Convert pandas DataFrame to R DataFrame
     pandas2ri.activate()
+    r_inputs = {}
     for key, value in inputs.items():
-        inputs[key] = pandas2ri.py2rpy(value)
+        r_inputs[key] = pandas2ri.py2rpy(value)
     # Send inputs to R
-    for key, value in inputs.items():
+    for key, value in r_inputs.items():
         robjects.globalenv[key] = value
     # Execute R script
     r(script_content)

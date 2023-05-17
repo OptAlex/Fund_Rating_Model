@@ -24,9 +24,16 @@ setwd("/Users/alexander/PycharmProjects/marketRisk/data")
 #data <- read.csv("log_returns.csv")
 d <- ncol(data)
 n <- 252
-
 # Store column names of data
 column_names <- colnames(data)
+
+# if (is.null(data) || length(data) == 0 ) {
+#   print("The 'data' variable is empty.")
+# }
+# else {
+#   print(head(data))
+# }
+#print(head(data))
 
 # Fit ARMA + GARCH model
 uspec <- ugarchspec(variance.model = list(model = 'sGARCH', garchOrder = c(1, 1)),
@@ -41,7 +48,7 @@ hist_resid_empir <- pobs(hist_resid_stand) # pobs() is in this case used to calc
                              # to fit to the copula
 
 # Creating the fit copula parameter to fit to the copula
-fitcop <- fitCopula(ellipCopula("t", dim = d), data = hist_resid_empir, method = "mpl", optim.method = "SANN")
+fitcop <- fitCopula(ellipCopula("t", dim = d), data = hist_resid_empir, method = "mpl", optim.method = "Nelder-Mead")
 df <- fitcop@estimate[2]
 
 total_simulations <- list()

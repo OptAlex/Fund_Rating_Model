@@ -1,6 +1,7 @@
 # All constants are saved in this file
 import numpy as np
 
+# thresholds for default probabilities where 0.01 means 1% loss
 THRESHOLDS = [
     0.01,
     0.015,
@@ -29,7 +30,6 @@ THRESHOLDS = [
 ]
 THRESHOLDS_LOG = np.log([x + 1 for x in THRESHOLDS])
 CVAR_LEVEL = [0.1, 0.5, 1, 2.5, 5, 10]
-NUM_BOOTSTRAPPING = 1000
+NUM_BOOTSTRAPPING = 10
 STOP_LOSS = 0.075
-BOOL_TO_EXCEL = True
-times = []
+BOOL_TO_EXCEL = False
