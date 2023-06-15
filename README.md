@@ -1,3 +1,4 @@
+
 Set up the project: 
 - We recommend setting the source folder to the overall project (marketrisk) to use the same paths as we do. Otherwise paths might need to be adjusted.
 - To install all required packages we suggest using a virtual environment and run pip install -r requirements.txt
