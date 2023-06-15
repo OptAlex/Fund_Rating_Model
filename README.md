@@ -1,54 +1,9 @@
-# What are we doing?
-Funds rating model
-- Construct a portfolio of funds (>20 funds).
-- Download daily market data for these funds. The time series shall cover at least 10 years.
-- Determine a suitable time series model (or suitable time series models, if deemed necessary) for these funds.
-- Simulate the PD and the 1Y-Credit VaR of this portfolio using your time series models under the assumption that the funds default when the simulated asset value of a fund falls below some default threshold, which you need to define and justify.
-- Investigate the appropriateness of such a modelling approach. This includes that you show that your chosen time series model(s) is (are) appropriate. How large is the statistical uncertainty of the model parameters? Is your VaR model appropriate and how precisely can you estimate the VaR?
 
-# How to organise?
+Set up the project: 
+- We recommend setting the source folder to the overall project (marketrisk) to use the same paths as we do. Otherwise paths might need to be adjusted.
+- To install all required packages we suggest using a virtual environment and run pip install -r requirements.txt
+- To speed up debugging we included a ETF_List_short.xlsx which significantly decreases runtime
 
-We use Trello to organise our tasks. Please make sure to create an account and keep track of everything project related there. This includes Literature, ToDo, Meetings, Time Schedule and so on. Link to join: https://trello.com/invite/marketrisk25/ATTIc2efa7bc04b806f168c1ba552d0c89892AD94AC3
+What is the project about?
 
-# How to use GIT?
-
-1. Never push to main branch! This branch is only used for merging new features into the main code. The features are tested on the prep branch first!
-2. We only merge the prep branch into the main branch with at least two people checking the code and functionality.
-3. The prep branch is the prototyping branch where we test new features and how they integrate in the currently used code. 
-4. If you want to create a new feature (a new functionality of the code) you do the following steps:
-  - Create a branch called "feat/Description of what the purpose of the branch is" from main
-  - This is the branch where you work on the new feature. Make sure to change your branch in the IDE of your choice.
-  - Each commit to the branch has to follow the commit rules provided below.
-5. Merge your feature into the prep branch. 
-
-# Committing and Pushing
-
-1. There are rules on how to structure your push messages:
-  - feat: A new feature
-  - fix: A bug fix
-  - docs: Documentation only changes
-  - style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
-  - refactor: A code change that neither fixes a bug nor adds a feature
-  - perf: A code change that improves performance
-  - test: Adding missing tests
-  - chore: Changes to the build process or auxiliary tools and libraries such as documentation generation
-2. Formatting: we use black formatting for the code (https://pypi.org/project/black/) before committing
-3. Make sure to get rid of unnecessary comments. Nobody needs a commit such as "looping over all risk factors. We all can read a loop.
-4. Speaking Loops: get rid of useless loops. You can use ChatGPT or Copilot to get better performing code.
-5. After your code is tested successfully and being pushed to the main, add your NEW packages to the requierments.txt file. Make sure to specify your version in cases needed
-
-# Example
-
-You want to add a feature which calculates the option price using Black-Scholes
-1. Create a branch "feat/BlackScholesOptionPricing" from main
-2. Change the branch in your IDE to the new branch
-3. Implement your Code.
-  - Make sure to use existing help functions and to create a new BlackScholesOptionPricing.py file.
-  - Commit, using the rules provided, after certain points (f.e. after long call, after long put, etc.)
-5. Check your code for comments and unnecessary for loops, etc. 
-6. Use black formatting 
-7. Push your commits to your branch: "feat/BlackScholesOptionpricing, extended description (field): add BS Option Pricing functionality"
-  - NOTE: discription is always simple present!
-9. check code and results with someone else and merge your branch into prep
-10. modify requirements.py
-11. If everything is tested and OK, merge prep into main (keep the prep branch!)
+The Topic of this project is to calculate the default probabilities and CVaR of a portfolio of funds using an ARMA-GARCH + Copula model to simulate 252 daily returns for each fund 1000 times in R. After the simulation, the default probability and CVaR is calculated in Python. All relevant help functions can be found in the folder help_functions. The main Process can be found in main.py. We are using parallelization, so runtime is depending on the number of CPU cores available. Because of numeric issues (see comment about try and except in the main.py) we figured out, that the most stable way to run the script while still using significantly large number of bootstrapping and simulations is 10x bootstrapping with 1000 simulation for 26 funds and 252 days. by itterating trough the for loop in the main.py we were able to gather 580 individual bootstrapping and perform a full simulation run on each of them. Plotting and analysing them was done separately and is not automated.
